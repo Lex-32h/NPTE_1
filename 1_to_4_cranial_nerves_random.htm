@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Acid-Base Disorders Quiz</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .quiz-container { max-width: 600px; margin: auto; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        .question { margin-bottom: 20px; }
+        .options label { display: block; margin-bottom: 10px; padding: 10px; border: 1px solid #eee; border-radius: 5px; cursor: pointer; }
+        .options label:hover { background-color: #f0f0f0; }
+        .options label.correct-highlight { background-color: #d4edda; border-color: #28a745; }
+        .options label.incorrect-highlight { background-color: #fff3cd; border-color: #dc3545; }
+        .feedback { margin-top: 15px; padding: 10px; border-radius: 5px; }
+        .feedback.correct { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .feedback.incorrect { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .navigation button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .navigation button:hover { background-color: #0056b3; }
+        .results { margin-top: 30px; text-align: center; font-size: 1.2em; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-content"></div>
+    <div class="navigation">
+        <button id="next-button" class="hidden" onclick="loadNextQuestion()">Next</button>
+    </div>
+    <div id="quiz-results" class="hidden"></div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            question: "<b>Question 1</b><br>What type of nerve is cranial nerve I (olfactory)?",
+            options: ["1: Autonomic", "2: Sensory", "3: Mixed (both motor and sensory)", "4: Motor"],
+            correctAnswer: "2: Sensory",
+            rationale: "Cranial nerve I (olfactory) is a sensory nerve responsible for the sense of smell, carrying olfactory information from the nasal cavity to the brain."
+        },
+        {
+            question: "<b>Question 2</b><br>What is the function of cranial nerve I (olfactory)?",
+            options: ["1: Hearing", "2: Facial sensation", "3: Vision", "4: Sense of smell"],
+            correctAnswer: "4: Sense of smell",
+            rationale: "The olfactory nerve (CN I) is responsible for the sense of smell, detecting and transmitting olfactory information from odor molecules in the nasal cavity."
+        },
+        {
+            question: "<b>Question 3</b><br>How is cranial nerve I (olfactory) typically tested?",
+            options: ["1: Facial muscle movement", "2: Pupillary light reflex", "3: Identify familiar odors with eyes closed", "4: Visual field testing"],
+            correctAnswer: "3: Identify familiar odors with eyes closed",
+            rationale: "CN I is tested by having the patient identify familiar odors with their eyes closed, testing each nostril separately to assess olfactory function."
+        },
+        {
+            question: "<b>Question 4</b><br>What condition results from damage to cranial nerve I?",
+            options: ["1: Anosmia (loss of smell)", "2: Facial paralysis", "3: Hearing loss", "4: Blindness"],
+            correctAnswer: "1: Anosmia (loss of smell)",
+            rationale: "Damage to the olfactory nerve results in anosmia, which is the complete or partial loss of the sense of smell."
+        },
+        {
+            question: "<b>Question 5</b><br>Where is cranial nerve I (olfactory) located in the brain?",
+            options: ["1: Cerebrum", "2: Brainstem", "3: Midbrain", "4: Cerebellum"],
+            correctAnswer: "1: Cerebrum",
+            rationale: "The olfactory nerve originates and terminates in the cerebrum, specifically connecting the nasal cavity to the olfactory cortex in the temporal lobe."
+        },
+        {
+            question: "<b>Question 6</b><br>What type of nerve is cranial nerve II (optic)?",
+            options: ["1: Motor", "2: Autonomic", "3: Sensory", "4: Mixed"],
+            correctAnswer: "3: Sensory",
+            rationale: "Cranial nerve II (optic) is a sensory nerve that carries visual information from the retina to the brain for processing."
+        },
+        {
+            question: "<b>Question 7</b><br>Which functions are associated with cranial nerve II (optic)?",
+            options: ["1: Hearing and balance", "2: Vision – color, acuity, peripheral vision, pupillary light reflex", "3: Eye movement and pupil constriction", "4: Facial sensation and chewing"],
+            correctAnswer: "2: Vision – color, acuity, peripheral vision, pupillary light reflex",
+            rationale: "CN II is responsible for all aspects of vision including color perception, visual acuity, peripheral vision, and the afferent limb of the pupillary light reflex."
+        },
+        {
+            question: "<b>Question 8</b><br>How is cranial nerve II (optic) typically tested?",
+            options: ["1: Smell identification", "2: Facial muscle testing", "3: Eye movement assessment", "4: Visual fields and visual acuity testing"],
+            correctAnswer: "4: Visual fields and visual acuity testing",
+            rationale: "CN II is tested through visual field testing and visual acuity assessment to evaluate the integrity of the visual pathways."
+        },
+        {
+            question: "<b>Question 9</b><br>What conditions can result from cranial nerve II damage?",
+            options: ["1: Facial paralysis and hearing loss", "2: Eye movement disorders", "3: Loss of smell and taste", "4: Blindness, color blindness, myopia, presbyopia"],
+            correctAnswer: "4: Blindness, color blindness, myopia, presbyopia",
+            rationale: "Damage to CN II can result in various visual impairments including blindness, color blindness, myopia (nearsightedness), and presbyopia (difficulty focusing on near objects)."
+        },
+        {
+            question: "<b>Question 10</b><br>What type of nerve is cranial nerve III (oculomotor)?",
+            options: ["1: Purely autonomic", "2: Motor", "3: Sensory", "4: Mixed"],
+            correctAnswer: "2: Motor",
+            rationale: "Cranial nerve III (oculomotor) is primarily a motor nerve that controls most of the eye movements and some autonomic functions like pupil constriction."
+        },
+        {
+            question: "<b>Question 11</b><br>Where is cranial nerve III (oculomotor) located?",
+            options: ["1: Midbrain", "2: Pons", "3: Cerebrum", "4: Medulla"],
+            correctAnswer: "1: Midbrain",
+            rationale: "The oculomotor nerve nucleus is located in the midbrain, from where it controls eye movements and pupillary functions."
+        },
+        {
+            question: "<b>Question 12</b><br>Which eye movements are controlled by cranial nerve III (oculomotor)?",
+            options: ["1: Lateral gaze only", "2: Downward and inward only", "3: Upward, downward, and medial gaze", "4: All eye movements"],
+            correctAnswer: "3: Upward, downward, and medial gaze",
+            rationale: "CN III controls upward, downward, and medial gaze movements, as well as the \"up and in\" movement when looking at the forehead."
+        },
+        {
+            question: "<b>Question 13</b><br>What eyelid function is controlled by cranial nerve III?",
+            options: ["1: Tear production", "2: Blinking reflex", "3: Closing eyelids", "4: Opening eyelids"],
+            correctAnswer: "4: Opening eyelids",
+            rationale: "CN III controls the levator palpebrae superioris muscle, which is responsible for opening (elevating) the eyelids."
+        },
+        {
+            question: "<b>Question 14</b><br>What pupillary function is associated with cranial nerve III?",
+            options: ["1: Pupil dilation", "2: Pupil constriction", "3: Pupil color changes", "4: No pupillary function"],
+            correctAnswer: "2: Pupil constriction",
+            rationale: "CN III carries parasympathetic fibers that control pupil constriction (miosis) as part of the pupillary light reflex and accommodation response."
+        },
+        {
+            question: "<b>Question 15</b><br>What conditions result from cranial nerve III damage?",
+            options: ["1: Lateral strabismus, ptosis, and pupil dilation", "2: Loss of smell and vision", "3: Facial paralysis and loss of taste", "4: Blindness and hearing loss"],
+            correctAnswer: "1: Lateral strabismus, ptosis, and pupil dilation",
+            rationale: "CN III damage results in lateral strabismus (eye deviation), ptosis (drooping eyelids), and pupil dilation due to loss of motor and parasympathetic functions."
+        },
+        {
+            question: "<b>Question 16</b><br>How is cranial nerve III (oculomotor) typically tested?",
+            options: ["1: Visual acuity testing", "2: Pupillary light reflex and smooth pursuit testing", "3: Hearing assessment", "4: Smell identification"],
+            correctAnswer: "2: Pupillary light reflex and smooth pursuit testing",
+            rationale: "CN III is tested through pupillary light reflex assessment and smooth pursuit eye movement testing to evaluate motor and autonomic functions."
+        },
+        {
+            question: "<b>Question 17</b><br>What type of nerve is cranial nerve IV (trochlear)?",
+            options: ["1: Sensory", "2: Autonomic", "3: Motor", "4: Mixed"],
+            correctAnswer: "3: Motor",
+            rationale: "Cranial nerve IV (trochlear) is a motor nerve that controls a specific eye movement through the superior oblique muscle."
+        },
+        {
+            question: "<b>Question 18</b><br>Where is cranial nerve IV (trochlear) located?",
+            options: ["1: Pons", "2: Medulla", "3: Midbrain", "4: Cerebrum"],
+            correctAnswer: "3: Midbrain",
+            rationale: "The trochlear nerve nucleus is located in the midbrain, similar to CN III, but controls a different and more specific eye movement."
+        },
+        {
+            question: "<b>Question 19</b><br>What specific eye movement is controlled by cranial nerve IV (trochlear)?",
+            options: ["1: Downward and inward (look at nose)", "2: Upward and outward", "3: Medial gaze", "4: Lateral gaze"],
+            correctAnswer: "1: Downward and inward (look at nose)",
+            rationale: "CN IV controls the superior oblique muscle, which produces downward and inward eye movement, such as when looking down at one's nose."
+        },
+        {
+            question: "<b>Question 20</b><br>How is cranial nerve IV (trochlear) typically tested?",
+            options: ["1: Visual field testing", "2: Pupillary light reflex", "3: Smooth pursuit movements", "4: Saccades (rapid eye movements)"],
+            correctAnswer: "4: Saccades (rapid eye movements)",
+            rationale: "CN IV is tested through saccadic eye movements, particularly assessing the ability to make rapid, precise downward and inward eye movements.<br><br>---"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let correctAnswersCount = 0;
+
+    const quizContent = document.getElementById('quiz-content');
+    const nextButton = document.getElementById('next-button');
+    const quizResults = document.getElementById('quiz-results');
+
+    function loadQuestion() {
+        if (currentQuestionIndex < quizData.length) {
+            const data = quizData[currentQuestionIndex];
+            quizContent.innerHTML = `
+                <div class="question">
+                    <p>${data.question}</p>
+                    <div class="options">
+                        ${data.options.map((option, index) => `
+                            <label data-value="${option}">
+                                <input type="radio" name="answer" value="${option}" onclick="checkAnswer(this)">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${currentQuestionIndex}" class="feedback hidden"></div>
+                </div>
+            `;
+            nextButton.classList.add('hidden');
+        } else {
+            showResults();
+        }
+    }
+
+    function checkAnswer(selectedRadio) {
+        const data = quizData[currentQuestionIndex];
+        const feedbackDiv = document.getElementById(`feedback-${currentQuestionIndex}`);
+        const radioButtons = document.querySelectorAll('input[name="answer"]');
+        const selectedLabel = selectedRadio.closest('label');
+
+        // Disable all radio buttons for the current question
+        radioButtons.forEach(radio => {
+            radio.disabled = true;
+        });
+
+        // Highlight the correct answer
+        document.querySelectorAll('.options label').forEach(label => {
+            if (label.dataset.value === data.correctAnswer) {
+                label.classList.add('correct-highlight');
+            }
+        });
+
+        if (selectedRadio.value === data.correctAnswer) {
+            feedbackDiv.classList.remove('incorrect', 'hidden');
+            feedbackDiv.classList.add('correct');
+            feedbackDiv.innerHTML = `<b>Correct Answer:</b> ${data.correctAnswer}<br><b>Rationale:</b> ${data.rationale}`;
+            correctAnswersCount++;
+        } else {
+            feedbackDiv.classList.remove('correct', 'hidden');
+            feedbackDiv.classList.add('incorrect');
+            feedbackDiv.innerHTML = `Incorrect. <br><b>Correct Answer:</b> ${data.correctAnswer}<br><b>Rationale:</b> ${data.rationale}`;
+            selectedLabel.classList.add('incorrect-highlight');
+        }
+        feedbackDiv.classList.remove('hidden');
+        nextButton.classList.remove('hidden');
+    }
+
+    function loadNextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        quizContent.classList.add('hidden');
+        nextButton.classList.add('hidden');
+        quizResults.classList.remove('hidden');
+        const percentage = (correctAnswersCount / quizData.length) * 100;
+        quizResults.innerHTML = `
+            <div class="results">
+                <h2>Quiz Complete!</h2>
+                <p>You got ${correctAnswersCount} out of ${quizData.length} questions correct.</p>
+                <p>Your score: ${percentage.toFixed(2)}%</p>
+            </div>
+        `;
+    }
+
+    // Initial load of the first question when the page loads
+    loadQuestion();
+</script>
+
+</body>
+</html>
